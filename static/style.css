@@ -17,12 +17,13 @@ body {
 .navbar {
     background-color: #121212; /* Negro oscuro para la barra de navegación */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    padding: 1rem 0; /* Aumenta el padding para dar espacio al logo */
+    padding: 0.5rem 0; /* Espaciado reducido para una barra más compacta */
 }
 
 .navbar-brand {
-    padding-top: 0;
-    padding-bottom: 0;
+    display: flex;
+    align-items: center;
+    padding: 0;
 }
 
 .navbar-brand img.navbar-logo {
@@ -30,11 +31,16 @@ body {
     width: auto;
 }
 
+.navbar-nav {
+    align-items: center;
+}
+
 .navbar-nav .nav-link {
     color: #a0a0a0; /* Gris claro para los enlaces */
     font-weight: bold;
     text-transform: uppercase;
     transition: color 0.3s ease;
+    padding: 0.5rem 1rem;
 }
 
 .navbar-nav .nav-link:hover {

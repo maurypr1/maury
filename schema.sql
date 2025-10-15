@@ -1,4 +1,3 @@
--- Elimina las tablas existentes si ya existen para una inicialización limpia
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS bets;
 DROP TABLE IF EXISTS odds;
@@ -7,7 +6,6 @@ DROP TABLE IF EXISTS team_elo_ratings;
 DROP TABLE IF EXISTS teams;
 DROP TABLE IF EXISTS users;
 
--- Tablas principales
 CREATE TABLE users (
     user_id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
@@ -60,14 +58,12 @@ CREATE TABLE bets (
     FOREIGN KEY (combo_bet_id) REFERENCES combo_bets (combo_bet_id)
 );
 
--- Nueva tabla para almacenar los rankings Elo de los equipos
 CREATE TABLE team_elo_ratings (
     team_id INTEGER PRIMARY KEY,
     elo_rating REAL NOT NULL,
     FOREIGN KEY (team_id) REFERENCES teams (team_id)
 );
 
--- Tabla para apuestas combinadas
 CREATE TABLE combo_bets (
     combo_bet_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -78,7 +74,6 @@ CREATE TABLE combo_bets (
     FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 
--- Tabla de transacciones
 CREATE TABLE transactions (
     transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -92,5 +87,4 @@ CREATE TABLE transactions (
     FOREIGN KEY (combo_bet_id) REFERENCES combo_bets (combo_bet_id)
 );
 
--- Datos iniciales
 INSERT INTO users (username, email, password_hash, is_admin) VALUES ('admin', 'admin@uni.edu', 'pbkdf2:sha256:260000$V1iH52r5j2aGg8b2$5f2f4557a10ded0b3134b2195cb154f9921e2b6e115169493d987c7b2d28b8a8', 1);

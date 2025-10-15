@@ -2,3 +2,4 @@ Flask>=2.0
 Werkzeug>=2.0
 pandas
 scipy
+pip freeze > requirements.txt

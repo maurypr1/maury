@@ -423,3 +423,6 @@ def fix_admin_password():
             return "No se encontró al usuario admin."
     except Exception as e:
         return f"Ocurrió un error: {e}"
+    
+if __name__ == '__main__':
+    app.run(debug=True)
