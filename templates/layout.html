@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>App de Apuestas</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <h1><a href="{{ url_for('index') }}">Apuestas Universitarias</a></h1>
+        <ul>
+            {% if g.user %}
+                <li><span>Usuario: {{ g.user['username'] }} ({{ "%.2f"|format(g.user['token_balance']) }} tokens)</span></li>
+                <li><a href="{{ url_for('profile') }}">Mi Perfil</a></li>
+                {% if g.user['is_admin'] %}
+                    <li><a href="{{ url_for('admin') }}">Admin</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+            {% else %}
+                <li><a href="{{ url_for('register') }}">Registrarse</a></li>
+                <li><a href="{{ url_for('login') }}">Iniciar Sesión</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <section class="content">
+        <header>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block header %}{% endblock %}
+        </header>
+        {% block content %}{% endblock %}
+    </section>
+</body>
+</html>

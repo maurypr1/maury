@@ -1,0 +1,274 @@
+/* Estilos Generales */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Navegación */
+.navbar {
+    background-color: #121212; /* Negro oscuro para la barra de navegación */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    padding: 1rem 0; /* Aumenta el padding para dar espacio al logo */
+}
+
+.navbar-brand {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.navbar-brand img.navbar-logo {
+    height: 100px; /* Aumentamos el tamaño del logo */
+    width: auto;
+}
+
+.navbar-nav .nav-link {
+    color: #a0a0a0; /* Gris claro para los enlaces */
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #007bff; /* Azul vibrante al pasar el mouse */
+}
+
+/* Títulos y secciones */
+h1, h2, h3, h4 {
+    color: #1a1a1a;
+}
+
+/* Tarjetas y Contenedores */
+.card {
+    background: #ffffff;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 12px 12px 0 0;
+}
+
+/* Formularios y Botones */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    border-radius: 8px;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    border-radius: 8px;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+    border-radius: 8px;
+}
+
+/* Mensajes Flash */
+.alert {
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+/* Estilos Específicos de Partidos */
+.match-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    min-width: 300px;
+    flex-shrink: 0;
+}
+
+.match-time {
+    color: #6c757d;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.odds {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    margin: 1rem 0;
+}
+
+.odds-item {
+    text-align: center;
+    flex: 1;
+    margin: 0 5px;
+}
+
+.odds-value {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.odds-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Nuevos estilos para el formato de apuestas */
+.odds-combo {
+    display: flex;
+    gap: 10px;
+}
+
+.odds-combo .odds-item {
+    flex: 1;
+    text-align: center;
+}
+
+.odds-combo label {
+    display: block;
+    cursor: pointer;
+}
+
+.odds-combo input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.odds-value-container {
+    padding: 10px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+.odds-combo input[type="checkbox"]:checked + .odds-value-container {
+    border-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.bet-form {
+    display: flex;
+    gap: 10px;
+}
+
+/* Estilos de la barra lateral de resumen (Bet Slip) */
+.bet-slip-container {
+    position: fixed;
+    right: -420px;
+    bottom: 20px;
+    top: auto;
+    width: 400px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+.bet-slip-container.visible {
+    right: 20px;
+}
+
+.bet-slip-header {
+    background-color: #121212;
+    color: #ffffff;
+    padding: 15px;
+    border-radius: 12px 12px 0 0;
+}
+
+.bet-slip-header h5 {
+    margin: 0;
+}
+
+.bet-slip-body {
+    padding: 15px;
+}
+
+.bet-slip-body ul {
+    list-style: none;
+    padding: 0;
+}
+
+.bet-slip-body ul li {
+    padding: 10px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.bet-slip-body ul li:last-child {
+    border-bottom: none;
+}
+
+.bet-slip-summary {
+    margin-top: 15px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-top: 1px solid #e9ecef;
+    padding-top: 15px;
+}
+
+/* Nuevos estilos para el desplazamiento horizontal */
+.scrollable-row {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.scrollable-row::-webkit-scrollbar {
+    height: 8px;
+}
+
+.scrollable-row::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.scrollable-row::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.scrollable-row::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

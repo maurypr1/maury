@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}Partidos{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Partidos Programados</h1>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <div class="tournament-container">
+                <h2 class="mt-4">TERCERA FEN</h2>
+                <div class="scrollable-row match-list">
+                    {% if matches %}
+                        <div class="d-flex flex-wrap gap-3">
+                            {% for match in matches %}
+                            <div class="match-card" data-match-id="{{ match.match_id }}" data-home-team="{{ match.home_team }}" data-away-team="{{ match.away_team }}">
+                                <h3>{{ match.home_team }} vs {{ match.away_team }}</h3>
+                                <p class="match-time">{{ match.match_datetime }}</p>
+
+                                <h5 class="mt-3">Apuesta Simple</h5>
+                                <form action="{{ url_for('bet', match_id=match.match_id) }}" method="post" class="bet-form">
+                                    <div class="input-group mb-2">
+                                        <input type="number" name="wager_amount" placeholder="Tokens" min="1" required class="form-control">
+                                        <select name="bet_type" class="form-select" required>
+                                            <option value="HOME_WIN">Gana Local ({{ match.odds_home | round(2) }})</option>
+                                            <option value="DRAW">Empate ({{ match.odds_draw | round(2) }})</option>
+                                            <option value="AWAY_WIN">Gana Visitante ({{ match.odds_away | round(2) }})</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Apostar Simple</button>
+                                </form>
+
+                                <hr>
+
+                                <h5 class="mt-3">Selección para Combinada</h5>
+                                <div class="odds-combo">
+                                    <div class="odds-item">
+                                        <label>
+                                            <input type="checkbox" name="selection" value="{{ match.match_id }}-HOME_WIN" data-odds="{{ match.odds_home | round(2) }}" onclick="handleSelection(this, '{{ match.match_id }}')">
+                                            <div class="odds-value-container">
+                                                <div class="odds-value">{{ match.odds_home | round(2) }}</div>
+                                                <div class="odds-label">Gana Local</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="odds-item">
+                                        <label>
+                                            <input type="checkbox" name="selection" value="{{ match.match_id }}-DRAW" data-odds="{{ match.odds_draw | round(2) }}" onclick="handleSelection(this, '{{ match.match_id }}')">
+                                            <div class="odds-value-container">
+                                                <div class="odds-value">{{ match.odds_draw | round(2) }}</div>
+                                                <div class="odds-label">Empate</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    <div class="odds-item">
+                                        <label>
+                                            <input type="checkbox" name="selection" value="{{ match.match_id }}-AWAY_WIN" data-odds="{{ match.odds_away | round(2) }}" onclick="handleSelection(this, '{{ match.match_id }}')">
+                                            <div class="odds-value-container">
+                                                <div class="odds-value">{{ match.odds_away | round(2) }}</div>
+                                                <div class="odds-label">Gana Visitante</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if g.user %}
+                        <div class="combo-wager-container mt-4 p-3 bg-light rounded shadow-sm">
+                            <h4>Realizar Apuesta Combinada</h4>
+                            <form id="combo-bet-form" action="{{ url_for('combo_bet') }}" method="post">
+                                <div id="combo-selections-hidden"></div> <div class="input-group mb-3">
+                                    <span class="input-group-text">Monto de la Apuesta</span>
+                                    <input type="number" name="combo_wager" min="1" required class="form-control" id="combo_wager">
+                                </div>
+                                <div class="input-group">
+                                    <span class="input-group-text">Cuota Total</span>
+                                    <input type="text" class="form-control" id="total-odds-display" value="1.00" readonly>
+                                </div>
+                                <button type="submit" class="btn btn-success w-100 mt-3" id="submit-combo-bet" disabled>Apostar Combinada</button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <p class="login-prompt">Inicia sesión para apostar.</p>
+                        {% endif %}
+                    {% else %}
+                    <p class="text-center">No hay partidos programados en este momento.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bet-slip-container" id="bet-slip">
+    <div class="bet-slip-header">
+        <h5>Tu Apuesta Combinada</h5>
+    </div>
+    <div class="bet-slip-body" id="bet-slip-body">
+        <ul id="selections-list" class="list-unstyled">
+            </ul>
+        <div class="bet-slip-summary">
+            <p><strong>Cuota Total:</strong> <span id="summary-total-odds">1.00</span></p>
+        </div>
+    </div>
+    <button class="btn btn-sm btn-danger w-100" onclick="clearSelections()">Limpiar Selecciones</button>
+</div>
+
+<script>
+    function updateBetSlip() {
+        const selectionsList = document.getElementById('selections-list');
+        const summaryTotalOdds = document.getElementById('summary-total-odds');
+        const totalOddsDisplay = document.getElementById('total-odds-display');
+        const submitButton = document.getElementById('submit-combo-bet');
+        const comboSelectionsHidden = document.getElementById('combo-selections-hidden');
+        const selectedCheckboxes = document.querySelectorAll('input[name="selection"]:checked');
+        const betSlip = document.getElementById('bet-slip');
+        
+        let totalOdds = 1.0;
+        selectionsList.innerHTML = '';
+        comboSelectionsHidden.innerHTML = '';
+
+        if (selectedCheckboxes.length > 1) {
+            selectedCheckboxes.forEach(checkbox => {
+                const matchCard = checkbox.closest('.match-card');
+                const homeTeam = matchCard.getAttribute('data-home-team');
+                const awayTeam = matchCard.getAttribute('data-away-team');
+                const odds = parseFloat(checkbox.getAttribute('data-odds'));
+                const betType = checkbox.value.split('-')[1];
+
+                let betLabel = '';
+                if (betType === 'HOME_WIN') betLabel = `Gana ${homeTeam}`;
+                if (betType === 'DRAW') betLabel = `Empate`;
+                if (betType === 'AWAY_WIN') betLabel = `Gana ${awayTeam}`;
+
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `<strong>${homeTeam} vs ${awayTeam}</strong><br>${betLabel} (${odds.toFixed(2)})`;
+                selectionsList.appendChild(listItem);
+
+                totalOdds *= odds;
+
+                // Agregar las selecciones como inputs ocultos para el formulario
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'selection';
+                hiddenInput.value = checkbox.value;
+                comboSelectionsHidden.appendChild(hiddenInput);
+            });
+
+            summaryTotalOdds.textContent = totalOdds.toFixed(2);
+            totalOddsDisplay.value = totalOdds.toFixed(2);
+            submitButton.disabled = false;
+            betSlip.classList.add('visible');
+        } else {
+            summaryTotalOdds.textContent = '1.00';
+            totalOddsDisplay.value = '1.00';
+            submitButton.disabled = true;
+            betSlip.classList.remove('visible');
+        }
+    }
+
+    function handleSelection(checkbox, matchId) {
+        const checkboxesInMatch = document.querySelectorAll(`.match-card[data-match-id="${matchId}"] input[type="checkbox"]`);
+        checkboxesInMatch.forEach(cb => {
+            if (cb !== checkbox) {
+                cb.checked = false;
+            }
+        });
+        updateVisualSelection();
+        updateBetSlip();
+    }
+    
+    function updateVisualSelection() {
+        document.querySelectorAll('.odds-item').forEach(el => {
+            el.classList.remove('odds-selected');
+        });
+        document.querySelectorAll('input[name="selection"]:checked').forEach(checkbox => {
+            checkbox.closest('.odds-item').classList.add('odds-selected');
+        });
+    }
+
+    function clearSelections() {
+        document.querySelectorAll('input[name="selection"]:checked').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        updateVisualSelection();
+        updateBetSlip();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateVisualSelection();
+        updateBetSlip();
+    });
+</script>
+{% endblock %}

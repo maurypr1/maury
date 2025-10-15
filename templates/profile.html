@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Perfil{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Mi Perfil</h1>
+    <div class="profile-info mb-4">
+        <p><strong>Usuario:</strong> {{ g.user.username }}</p>
+        <p><strong>Email:</strong> {{ g.user.email }}</p>
+        <p><strong>Balance:</strong> {{ g.user.token_balance | round(2) }} tokens</p>
+    </div>
+
+    <h2>Historial de Apuestas Combinadas</h2>
+    {% if combo_bets %}
+        {% for combo in combo_bets %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Apuesta Combinada #{{ combo.combo_bet_id }}</h5>
+                <p><strong>Monto Apostado:</strong> {{ combo.total_wager }}</p>
+                <p><strong>Ganancia Potencial:</strong> {{ combo.potential_payout | round(2) }}</p>
+                <p><strong>Estado:</strong> {{ combo.status }}</p>
+                <h6>Selecciones:</h6>
+                <ul>
+                    {% for selection in combo.selections %}
+                    <li>{{ selection.home_team }} vs {{ selection.away_team }} (Apuesta: {{ selection.bet_type }}, Cuota: {{ selection.odds_at_placement | round(2) }})</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <p>No has realizado apuestas combinadas.</p>
+    {% endif %}
+
+    <h2 class="mt-5">Historial de Apuestas Simples</h2>
+    {% if bets %}
+    <table class="table bet-history">
+        <thead>
+            <tr>
+                <th>Partido</th>
+                <th>Tipo de Apuesta</th>
+                <th>Monto</th>
+                <th>Cuota</th>
+                <th>Ganancia Potencial</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bet in bets %}
+            <tr class="status-{{ bet.status.lower() }}">
+                <td>{{ bet.home_team }} vs {{ bet.away_team }}</td>
+                <td>{{ bet.bet_type }}</td>
+                <td>{{ bet.wager_amount | round(2) }}</td>
+                <td>{{ bet.odds_at_placement | round(2) }}</td>
+                <td>{{ bet.potential_payout | round(2) }}</td>
+                <td>{{ bet.status }}</td>
+                <td>{{ bet.created_at }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No has realizado apuestas simples aún.</p>
+    {% endif %}
+</div>
+{% endblock %}
